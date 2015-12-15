@@ -1,0 +1,32 @@
+{
+  "name": "ng-flow-chart",
+  "description": "AngularJS directive for displaying flow charts",
+  "main": "dist/ng-flow-chart.js",
+  "authors": [
+    "bennyrowland"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "angular",
+    "flow"
+  ],
+  "homepage": "https://github.com/bennyrowland/ng-flow-chart",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "angular": "~1.4.8"
+  },
+  "dependencies": {
+    "angular-mousewheel": "~1.0.4",
+    "ng-mouse-capture": "~0.1.0",
+    "angular-bootstrap": "~0.14.3",
+    "bootstrap-css-only": "~3.3.5",
+    "angular-native-dragdrop": "~1.2.0"
+  }
+}

@@ -1,0 +1,85 @@
+body {
+  background-color: gray;
+}
+
+.node {
+  stroke-width: 2; stroke: black;
+}
+
+//.node:hover + .node-title {
+//  stroke: black;
+//  stroke-width: 2;
+//}
+
+.node-title {
+  pointer-events: none;
+  stroke: black;
+  stroke-width: 2;
+}
+
+.node-group:hover .node {
+  stroke-width: 4;
+}
+
+.node-text {
+  pointer-events: visible;
+}
+
+.node-connector-text {
+  pointer-events: none;
+}
+
+.node-connector {
+  stroke-width: 2;
+  stroke: black;
+}
+
+.node-connector:hover {
+  stroke-width: 4;
+}
+
+.connection-line {
+  stroke: black;
+  stroke-width: 3;
+  fill: transparent;
+}
+
+.connection-endpoint {
+  fill: black
+}
+
+.connection-group:hover .connection-line {
+  stroke: red;
+}
+
+.connection-group .connection-line:hover {
+  stroke: black;
+}
+
+.connection-group:hover .connection-endpoint {
+  fill: red;
+}
+
+.connection-group .connection-line:hover~.connection-endpoint {
+  fill: black;
+}
+
+.delete-button {
+  visibility: hidden;
+}
+
+.connection-group:hover .delete-button {
+  visibility: visible;
+}
+
+.node-group:hover .delete-button {
+  visibility: visible;
+}
+
+.dummy {
+  pointer-events: none;
+}
+
+.invalid-connection {
+  opacity: 0.4;
+}

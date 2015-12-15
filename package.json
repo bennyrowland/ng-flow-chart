@@ -1,0 +1,40 @@
+{
+  "name": "ng-flow-chart",
+  "version": "0.0.1",
+  "description": "AngularJS directive for displaying flow charts",
+  "main": "index.js",
+  "scripts": {
+    "start": "simplehttpserver demo",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bennyrowland/ng-flow-chart.git"
+  },
+  "keywords": [
+    "angular",
+    "flow"
+  ],
+  "author": "bennyrowland",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bennyrowland/ng-flow-chart/issues"
+  },
+  "homepage": "https://github.com/bennyrowland/ng-flow-chart#readme",
+  "devDependencies": {
+    "bower": "^1.6.9",
+    "event-stream": "^3.3.2",
+    "gulp-angular-filesort": "^1.1.1",
+    "gulp-angular-templatecache": "^1.8.0",
+    "gulp-htmlhint": "^0.3.0",
+    "gulp-inject": "^3.0.0",
+    "gulp-jshint": "^2.0.0",
+    "gulp-load-plugins": "^1.1.0",
+    "gulp-main-bower-files": "^1.2.5",
+    "gulp-nodemon": "^2.0.4",
+    "gulp-print": "^2.0.1",
+    "gulp-sass": "^2.1.0",
+    "jshint-stylish": "^2.1.0",
+    "simplehttpserver": "0.0.5"
+  }
+}
