@@ -6,7 +6,7 @@ angular.module('flowchart')
         return {
             restrict: 'E',
             scope: {
-                chart: '='
+                graphSpec: '='
             },
             link: function (scope, element, attrs) {
                 scope.libraries = flowLibrary.getAllLibraries();

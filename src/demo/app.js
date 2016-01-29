@@ -8,12 +8,12 @@ angular.module('flowchartDemo', ['flowchart', 'monospaced.mousewheel'])
 
         flowLibrary.addLibrary("core", {
             'ReadFile': {
-                inports: ["source", "dummy"],
-                outports: ["out"]
+                inports: [{"name": "source"}, {"name": "dummy"}],
+                outports: [{"name": "out"}]
             },
             'SplitStr': {
-                inports: ["in"],
-                outports: ["out"]
+                inports: [{"name": "in"}],
+                outports: [{"name": "out"}]
             }
         });
 
@@ -25,18 +25,31 @@ angular.module('flowchartDemo', ['flowchart', 'monospaced.mousewheel'])
                 "Read File": {
                     "component": "core/ReadFile",
                     "metadata": {
-                        "x": 10,
+                        "x": 100,
                         "y": 100
                     }
                 },
                 "Split by Lines": {
                     "component": "core/SplitStr",
                     "metadata": {
-                        "x": 250,
+                        "x": 350,
                         "y": 10
                     }
                 }
             },
+            "inports": [
+                {
+                    "name": "in 1"
+                },
+                {
+                    "name": "in 2"
+                }
+            ],
+            "outports": [
+                {
+                    "name": "out 1"
+                }
+            ],
             "connections": [
                 {
                     "data": "package.json",
@@ -53,6 +66,17 @@ angular.module('flowchartDemo', ['flowchart', 'monospaced.mousewheel'])
                     "tgt": {
                         "process": "Split by Lines",
                         "port": "in"
+                    }
+                },
+                {
+                    "src": {
+                        "process":"inports",
+                        "port":"in 2"
+                    },
+                    "tgt":
+                    {
+                        "process":"Read File",
+                        "port":"dummy"
                     }
                 }
             ]

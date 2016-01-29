@@ -1,1 +1,1 @@
-angular.module('flowchart', ['dragging', 'ui.bootstrap', 'ang-drag-drop']);
+angular.module('flowchart', ['dragging', 'ui.bootstrap', 'ang-drag-drop', 'dndLists']);

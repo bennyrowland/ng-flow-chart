@@ -24,43 +24,77 @@ angular.module('flowchart')
 
         var createConnectorsViewModel = function(connectorDataModels, x, parentNode) {
             var viewModels = [];
+            viewModels.modelArray = connectorDataModels;
+
             if (connectorDataModels) {
                 for (var i = 0; i < connectorDataModels.length; ++i) {
                     var connectorViewModel = new viewModelFunctions.ConnectorViewModel(connectorDataModels[i], x, viewModelFunctions.computeConnectorY(i), parentNode);
                     viewModels.push(connectorViewModel);
                 }
             }
+            viewModels.push = function() {
+                Array.prototype.push.apply(this.modelArray, [arguments[0].data]);
+                Array.prototype.push.apply(this, arguments);
+            };
+            viewModels.remove = function(index) {
+                this.modelArray.splice(index, 1);
+                this.splice(index, 1);
+            };
+            viewModels.move = function(oldIndex, newIndex) {
+                if (oldIndex < newIndex) {
+                    newIndex--;
+                }
+                this.modelArray.splice(newIndex, 0, this.modelArray.splice(oldIndex, 1)[0]);
+                this.splice(newIndex, 0, this.splice(oldIndex, 1)[0]);
+            };
             return viewModels;
         };
+
+        /*viewModelFunctions.InportsViewModel = function(inportsDataModel) {
+            this.inports = createConnectorsViewModel(inportsDataModel, 50, this);
+        };*/
 
         viewModelFunctions.NodeViewModel = function (id, nodeDataModel) {
             this.id = id;
             this.data = nodeDataModel;
-            this.template = flowLibrary.getComponentSchema(this.data.component);
+            if ('template' in nodeDataModel) {
+                this.template = nodeDataModel.template;
+            }
+            else {
+                this.template = flowLibrary.getComponentSchema(this.data.component);
+            }
+
+            if ('width' in nodeDataModel.metadata) {
+                this.width = function() { return this.data.metadata.width; };
+            }
+            else {
+                this.width = function () { return viewModelFunctions.defaultNodeWidth; };
+            }
 
             this.inports = createConnectorsViewModel(this.template.inports, 0, this);
-            this.outports = createConnectorsViewModel(this.template.outports, viewModelFunctions.defaultNodeWidth, this);
+            this.outports = createConnectorsViewModel(this.template.outports, this.width(), this);
 
-            this.width = function() { return viewModelFunctions.defaultNodeWidth; };
-            this.height = function() {
+            this.height = function () {
                 var numConnectorRows = Math.max(this.inports.length, this.outports.length);
                 return viewModelFunctions.computeConnectorY(numConnectorRows);
             };
 
-            this.getInport = function(name) {
+            this.getInport = function (name) {
                 for (var i = 0; i < this.inports.length; ++i) {
-                    if (this.inports[i].data === name) {
+                    if (this.inports[i].data.name === name) {
                         return this.inports[i];
                     }
                 }
+                return undefined;
             };
 
-            this.getOutport = function(name) {
+            this.getOutport = function (name) {
                 for (var i = 0; i < this.outports.length; ++i) {
-                    if (this.outports[i].data === name) {
+                    if (this.outports[i].data.name === name) {
                         return this.outports[i];
                     }
                 }
+                return undefined;
             };
 
             this.selected = false;
@@ -109,15 +143,35 @@ angular.module('flowchart')
         viewModelFunctions.ChartViewModel = function (chartDataModel) {
             this.data = chartDataModel;
 
+            // create array of processes
             this.processes = createNodesViewModel(this.data.processes);
+            // we also need two helper processes for the inports and outports
+            this.inports = new viewModelFunctions.NodeViewModel('inports', {
+                metadata: {x: 0, y: 0, width: 50},
+                template: {
+                    outports: this.data.inports
+                }
+            });
+            this.outports = new viewModelFunctions.NodeViewModel('outports', {
+                metadata: {x: 0, y: 0, width: 50},
+                template: {
+                    inports: this.data.outports
+                }
+            });
+
+            this.getProcess = function(processName) {
+                if (processName == "inports") { return this.inports; }
+                else if (processName == "outports") { return this.outports; }
+                else { return this.processes[processName]; }
+            };
 
             this.connections = [];
             for (var i = 0; i < this.data.connections.length; ++i) {
                 var source;
                 if (!("data" in this.data.connections[i])) {
-                    source = this.processes[this.data.connections[i].src.process].getOutport(this.data.connections[i].src.port);
+                    source = this.getProcess(this.data.connections[i].src.process).getOutport(this.data.connections[i].src.port);
                 }
-                var target = this.processes[this.data.connections[i].tgt.process].getInport(this.data.connections[i].tgt.port);
+                var target = this.getProcess(this.data.connections[i].tgt.process).getInport(this.data.connections[i].tgt.port);
                 this.connections.push(new viewModelFunctions.ConnectionViewModel(this.data.connections[i], source, target));
             }
 
@@ -142,7 +196,7 @@ angular.module('flowchart')
                     data: data,
                     tgt: {
                         process: inport.parentNode.id,
-                        port: inport.data
+                        port: inport.data.name
                     }
                 };
                 var viewModel = new viewModelFunctions.ConnectionViewModel(dataModel, undefined, inport);
@@ -165,11 +219,11 @@ angular.module('flowchart')
                 var dataModel = {
                     src: {
                         process: outport.parentNode.id,
-                        port: outport.data
+                        port: outport.data.name
                     },
                     tgt: {
                         process: inport.parentNode.id,
-                        port: inport.data
+                        port: inport.data.name
                     }
                 };
                 var viewModel = new viewModelFunctions.ConnectionViewModel(dataModel, outport, inport);
@@ -199,7 +253,8 @@ angular.module('flowchart')
                 var i = 0;
                 var id = componentName + i;
                 while (id in this.processes) {
-                    id = componentName + ++i;
+                    ++i;
+                    id = componentName + i;
                 }
                 var viewModel = new viewModelFunctions.NodeViewModel(id, dataModel);
                 this.data.processes[id] = dataModel;
@@ -213,6 +268,40 @@ angular.module('flowchart')
                 }
                 delete this.data.processes[process.id];
                 delete this.processes[process.id];
+            };
+
+            this.addInport = function (inport) {
+                if (inport === undefined) {
+                    var inport_name;
+                    var inport_index = 1;
+                    do {
+                        inport_name = "new inport " + inport_index++;
+                        console.log("checking inport name " + inport_name);
+                    } while (this.inports.getOutport(inport_name) !== undefined);
+                    inport = {
+                        name: inport_name
+                    };
+                }
+                console.log("adding inport ");
+                console.log(inport);
+                //this.data.inports.push(inport);
+                var newConnector = new viewModelFunctions.ConnectorViewModel(inport, 0, viewModelFunctions.computeConnectorY(this.inports.outports.length), this.inports);
+                this.inports.outports.push(newConnector);
+            };
+
+            this.addOutport = function(outport) {
+                if (outport === undefined) {
+                    var outport_name;
+                    var outport_index = 1;
+                    do {
+                        outport_name = "new outport " + outport_index++;
+                    } while (this.outports.getInport(outport_name) !== undefined);
+                    outport = {
+                        name: outport_name
+                    };
+                }
+                var newConnector = new viewModelFunctions.ConnectionViewModel(outport, 0, viewModelFunctions.computeConnectorY(this.outports.inports.length), this.outports);
+                this.outports.inports.push(newConnector);
             };
         };
 

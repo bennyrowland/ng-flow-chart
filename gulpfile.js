@@ -6,7 +6,8 @@ var nodemon = require('gulp-nodemon');
 
 var paths = {
     distDemo: './demo',
-    distLib: './distDemo/lib',
+    distLibDev: './distDemo/lib',
+    distLib: './dist',
     index: './src/demo/index.html',
     libPartials: './src/lib/**/*.html',
     libStyles: './src/lib/**/*.scss',
@@ -29,23 +30,35 @@ pipes.builtExternalScripts = function() {
         .pipe(gulp.dest(paths.distDemo))
 };
 
-pipes.builtLibScripts = function() {
+pipes.validatedLibScripts = function() {
     return gulp.src(paths.srcLib)
         .pipe(plugins.jshint())
         .pipe(plugins.jshint.reporter('jshint-stylish'))
-        .pipe(gulp.dest(paths.distLib))
+};
+
+pipes.builtLibScriptsDev = function() {
+    return pipes.validatedLibScripts()
+        .pipe(gulp.dest(paths.distLibDev))
+};
+
+pipes.builtLibScriptsDist = function() {
+    return pipes.validatedLibScripts()
+        .pipe(plugins.angularFilesort())
+        .pipe(plugins.concat('ng-flow-chart.min.js'))
+        //.pipe(plugins.uglify())
+        .pipe(gulp.dest(paths.distLibDev));
 };
 
 pipes.compiledPartials = function() {
     return gulp.src(paths.libPartials)
         .pipe(plugins.angularTemplatecache({module: 'flowchart'}))
-        .pipe(gulp.dest(paths.distLib));
+        .pipe(gulp.dest(paths.distLibDev));
 };
 
 pipes.builtStyles = function() {
     return gulp.src(paths.libStyles)
         .pipe(plugins.sass())
-        .pipe(gulp.dest(paths.distLib))
+        .pipe(gulp.dest(paths.distLibDev))
 };
 
 pipes.copiedStyles = function() {
@@ -54,7 +67,15 @@ pipes.copiedStyles = function() {
 };
 
 pipes.builtLib = function() {
-    return es.merge(pipes.builtLibScripts(), pipes.compiledPartials());
+    return es.merge(pipes.builtLibScriptsDev(), pipes.compiledPartials());
+};
+
+pipes.builtLibDist = function () {
+    return es.merge(pipes.builtLib()
+        .pipe(plugins.angularFilesort())
+        .pipe(plugins.concat('ng-flow-chart.min.js')), pipes.builtStyles()
+        .pipe(plugins.concat('ng-flow-chart.css')))
+        .pipe(gulp.dest(paths.distLib))
 };
 
 pipes.copiedLibScripts = function() {
@@ -86,6 +107,8 @@ pipes.builtIndex = function() {
 pipes.builtDemo = function() {
     return pipes.builtIndex();
 };
+
+gulp.task('build-lib', pipes.builtLibDist);
 
 gulp.task('build-demo', pipes.builtDemo);
 

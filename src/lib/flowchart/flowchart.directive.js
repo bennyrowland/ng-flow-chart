@@ -2,16 +2,42 @@
  * Created by ben on 06/12/15.
  */
 angular.module('flowchart')
-    .directive('ngFlowChart', ['flowLibrary', 'viewmodel', 'dragging', function(flowLibrary, viewmodel, dragging) {
+    .directive('ngFlowChart', ['flowLibrary', 'viewmodel', 'dragging', '$uibModal', function(flowLibrary, viewmodel, dragging, $uibModal) {
         return {
             restrict: 'E',
             scope: {
-                chart: '='
+                graphSpec: '='
             },
             link: function (scope, element, attrs) {
-                scope.graph = new viewmodel.ChartViewModel(scope.chart);
+                if (scope.graphSpec === undefined) {
+                    scope.graphSpec = {
+                        processes: [],
+                        connections: []
+                    };
+                }
+                scope.graph = new viewmodel.ChartViewModel(scope.graphSpec);
 
-                console.log(scope.graph);
+                scope.$watch('graphSpec', function (newValue, oldValue) {
+                    scope.graph = new viewmodel.ChartViewModel(scope.graphSpec);
+
+                    // the graph needs to know the size of the viewing window in order to position the
+                    // inport and outport processes at the edges of the view
+                    scope.graph.inports.data.metadata.y = (scope.elementHeight() - scope.inportsHeight()) / 2.0;
+                    scope.graph.outports.data.metadata.x = (scope.elementWidth() - scope.graph.outports.width());
+                    scope.graph.outports.data.metadata.y = (scope.elementHeight() - scope.outportsHeight()) / 2.0;
+                }, true);
+
+                scope.editInportsOutports = function () {
+                    /*scope.graph.addInport({
+                        name: "inport"
+                    });*/
+                    console.log(scope.graph.inports.outports);
+                    $uibModal.open({
+                        animation: true,
+                        templateUrl: "flowchart/ports.template.html",
+                        scope: scope
+                    });
+                };
 
                 var svgElem = element;
                 scope.draggingConnection = false;
@@ -161,6 +187,34 @@ angular.module('flowchart')
                     console.log("A new process " + $data + " was dropped at " + location.x + ' ' + location.y);
                     this.graph.addProcess($data, {x: location.x, y: location.y});
                 };
+
+                scope.elementHeight = function() {
+                    return element[0].offsetHeight;
+                };
+
+                scope.elementWidth = function() {
+                    return element[0].offsetWidth;
+                };
+
+                scope.inportsHeight = function() {
+                    return scope.graph.inports.height();
+                };
+
+                scope.outportsHeight = function() {
+                    return scope.graph.outports.height();
+                };
+
+                scope.roundedRectPath = function(width, height, r0, r1, r2, r3) {
+                    return 'M' + r0 + ' 0 l' + (width - r0 - r1) + ' 0 a' + r1 + ' ' + r1 + ' 0 0 1 ' + r1 + ' ' + r1 + ' l 0 ' + (height - r1 - r2) + 'a-' + r2 + ' ' + r2 + ' 0 0 1 -' + r2 + ' ' + r2 + 'l-' + (width - r2 - r3) + ' 0 a-' + r3 + ' -' + r3 + ' 0 0 1 -' + r3 + ' -' + r3 + 'l0 -' + (height - r3 - r0) + 'a' + r0 + ' -' + r0 + ' 0 0 1 ' + r0 + ' -' + r0 + 'Z';
+                };
+
+                scope.$watch(function() { return element[0].offsetWidth; }, function (newValue, oldValue) {
+                    scope.graph.outports.data.metadata.x = newValue - scope.graph.outports.width();
+                });
+
+                scope.graph.inports.data.metadata.y = (scope.elementHeight() - scope.inportsHeight()) / 2.0;
+                scope.graph.outports.data.metadata.x = (scope.elementWidth() - scope.graph.outports.width());
+                scope.graph.outports.data.metadata.y = (scope.elementHeight() - scope.outportsHeight()) / 2.0;
             },
             templateUrl: "flowchart/flowchart.template.html",
             replace: true
