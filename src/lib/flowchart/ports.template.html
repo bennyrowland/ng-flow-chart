@@ -1,41 +1,51 @@
-<div class="ports">
-    <div class="inports">
-        <h3>Inports</h3>
-        <ul dnd-list="graph.inports.outports"
-            dnd-drop="graph.inports.outports.move(item.index, index)"
-            dnd-allowed-types="inport"
-        >
-            <li ng-repeat="item in graph.inports.outports"
-                dnd-draggable="{index: $index}"
-                dnd-effect-allowed="move"
-                dnd-type="inport"
-            >
-                <div class="handle">:::</div>
-                <div class="name" dnd-nodrag="">
-                    <input class="input-sm form-control" ng-model="item.data.name">
-                </div>
-            </li>
-        </ul>
-        <button type="button" ng-click="graph.addInport()" style="float: right">Add Inport</button>
+<form ng-submit="submit()">
+    <div class="modal-header">
+        <div class="inports">
+            <h3>Inports</h3>
+        </div>
+        <div class="outports">
+            <h3 style="text-align: right">Outports</h3>
+        </div>
     </div>
-    <div class="outports">
-        <h3 style="text-align: right">Outports</h3>
-
-        <ul dnd-list="graph.outports.inports"
-            dnd-drop="graph.outports.inports.move(item.index, index)"
-            dnd-allowed-types="outport"
-        >
-            <li ng-repeat="item in graph.outports.inports"
-                dnd-draggable="{index: $index}"
-                dnd-effect-allowed="move"
-                dnd-type="outport"
+    <div class="ports modal-body">
+        <div class="inports">
+            <ul dnd-list="graph.inports"
+                dnd-drop="graph.inports.move(item.index, index)"
+                dnd-allowed-types="inport"
             >
-                <div class="handle">:::</div>
-                <div class="name" dnd-nodrag="">
-                    <input class="input-sm form-control" ng-model="item.data.name">
-                </div>
-            </li>
-        </ul>
-        <button type="button" ng-click="graph.addOutport()" style="float: right">Add Outport</button>
+                <li ng-repeat="item in graph.inports"
+                    dnd-draggable="{index: $index}"
+                    dnd-effect-allowed="move"
+                    dnd-type="inport"
+                >
+                    <div class="handle">:::</div>
+                    <div class="name" dnd-nodrag="">
+                        <input type="text" class="input-sm form-control" ng-model="item.data.name">
+                    </div>
+                </li>
+            </ul>
+            <button type="button" class="btn" ng-click="graph.inports.add()" style="float: right">Add Inport</button>
+        </div>
+        <div class="outports">
+            <ul dnd-list="graph.outports"
+                dnd-drop="graph.outports.move(item.index, index)"
+                dnd-allowed-types="outport"
+            >
+                <li ng-repeat="item in graph.outports"
+                    dnd-draggable="{index: $index}"
+                    dnd-effect-allowed="move"
+                    dnd-type="outport"
+                >
+                    <div class="handle">:::</div>
+                    <div class="name" dnd-nodrag="">
+                        <input type="text" class="input-sm form-control" ng-model="item.data.name">
+                    </div>
+                </li>
+            </ul>
+            <button type="button" class="btn" ng-click="graph.outports.add()" style="float: right">Add Outport</button>
+        </div>
     </div>
-</div>
+    <div class="modal-footer">
+        <button type="submit" autofocus class="btn btn-primary">OK</button>
+    </div>
+</form>

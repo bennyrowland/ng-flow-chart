@@ -5,7 +5,7 @@
         ng-mousedown="chartMouseDown($event)"
         ng-mousemove="mouseMove($event)"
         ui-on-drop="processDrop($event, $data, $channel)"
-        drop-channel="ng-flow-process"
+        drop-channel="ng-flow-process, ng-flow-graph"
         mouse-capture
 >
 
@@ -90,7 +90,7 @@
                 </g>
 
                 <g ng-repeat="connector in process.inports"
-                   ng-attr-transform="translate({{connector.x}}, {{connector.y}})"
+                   ng-attr-transform="translate({{connector.x()}}, {{connector.y()}})"
                    class="connector"
                 >
                     <circle
@@ -111,7 +111,7 @@
                 </g>
 
                 <g ng-repeat="connector in process.outports"
-                   ng-attr-transform="translate({{connector.x}}, {{connector.y}})"
+                   ng-attr-transform="translate({{connector.x()}}, {{connector.y()}})"
                    class="connector"
                 >
                     <circle
@@ -136,16 +136,16 @@
                     ng-attr-transform="translate(0,{{(elementHeight() - inportsHeight()) / 2.0}})"
             >
                 <path
-                        ng-attr-d="{{roundedRectPath(50, inportsHeight(), 0, 10, 10, 0)}}"
+                        ng-attr-d="{{roundedRectPath(graph.inports.width(), graph.inports.height(), 0, 10, 10, 0)}}"
                         class="graph-inports"
                 />
 
-                <path ng-attr-d="{{roundedRectPath(50, 25, 0, 10, 0, 0)}}"
+                <path ng-attr-d="{{roundedRectPath(graph.inports.width(), 25, 0, 10, 0, 0)}}"
                       class="graph-inports-header"
                 />
 
                 <text
-                        ng-attr-x="{{25}}"
+                        ng-attr-x="{{graph.inports.width() / 2}}"
                         y="15"
                         text-anchor="middle"
                         alignment-baseline="middle"
@@ -153,8 +153,8 @@
                     in
                 </text>
 
-                <g ng-repeat="connector in graph.inports.outports"
-                   ng-attr-transform="translate({{connector.x}}, {{connector.y}})"
+                <g ng-repeat="connector in graph.inports"
+                   ng-attr-transform="translate({{connector.x()}}, {{connector.y()}})"
                    class="connector"
                 >
                     <circle
@@ -179,16 +179,16 @@
                     ng-attr-transform="translate({{(elementWidth() - graph.outports.width())}},{{(elementHeight() - outportsHeight()) / 2.0}})"
             >
                 <path
-                        ng-attr-d="{{roundedRectPath(50, outportsHeight(), 10, 0, 0, 10)}}"
+                        ng-attr-d="{{roundedRectPath(graph.outports.width(), outportsHeight(), 10, 0, 0, 10)}}"
                         class="graph-inports"
                 />
 
-                <path ng-attr-d="{{roundedRectPath(50, 25, 10, 0, 0, 0)}}"
+                <path ng-attr-d="{{roundedRectPath(graph.outports.width(), 25, 10, 0, 0, 0)}}"
                       class="graph-inports-header"
                 />
 
                 <text
-                        ng-attr-x="{{25}}"
+                        ng-attr-x="{{graph.inports.width() / 2}}"
                         y="15"
                         text-anchor="middle"
                         alignment-baseline="middle"
@@ -196,8 +196,8 @@
                     out
                 </text>
 
-                <g ng-repeat="connector in graph.outports.inports"
-                   ng-attr-transform="translate({{connector.x}}, {{connector.y}})"
+                <g ng-repeat="connector in graph.outports"
+                   ng-attr-transform="translate({{connector.x()}}, {{connector.y()}})"
                    class="connector"
                 >
                     <circle
@@ -221,7 +221,7 @@
             <g ng-repeat="connection in graph.connections"
                class="connection-group connection"
                >
-                <g ng-if="!connection.hasData()">
+                <g ng-if="!connection.isDataConnection()">
                     <path ng-attr-d="M {{connection.sourceX()}}, {{connection.sourceY()}}
                              L {{connection.targetX()}}, {{connection.targetY()}}"
                           ng-attr-class="{{'connection-line'}}"
@@ -254,13 +254,13 @@
                         <use xlink:href="#delete" class="delete-button"></use>
                     </g>
                 </g>
-                <g ng-if="connection.hasData()"
+                <g ng-if="connection.isDataConnection()"
                    ng-attr-transform="translate({{connection.targetX()}}, {{connection.targetY()}})"
                    >
                     <text ng-attr-x="{{-30}}"
                           y="5"
                           text-anchor="end">
-                        {{connection.data.data}}
+                        {{connection.dataValue}}
                     </text>
                     <line x1="-25"
                           x2="0"
@@ -278,6 +278,11 @@
                        ng-click="deleteConnection(connection)"
                     >
                         <use xlink:href="#delete" class="delete-button"></use>
+                    </g>
+                    <g ng-attr-transform="translate({{connection.midpointX() - 20}}, {{connection.midpointY()}})"
+                       ng-click="editConnection(connection)"
+                        >
+                        <use xlink:href="#edit" class="delete-button"></use>
                     </g>
                 </g>
             </g>

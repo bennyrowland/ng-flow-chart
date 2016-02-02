@@ -3,7 +3,7 @@
  */
 
 angular.module('flowchartDemo', ['flowchart', 'monospaced.mousewheel'])
-    .controller('MainCtrl', ['$scope', 'flowLibrary', function($scope, flowLibrary) {
+    .controller('MainCtrl', ['$scope', 'flowLibrary', 'viewmodel', function($scope, flowLibrary, viewmodel) {
         $scope.name = 'Alex';
 
         flowLibrary.addLibrary("core", {
@@ -17,68 +17,155 @@ angular.module('flowchartDemo', ['flowchart', 'monospaced.mousewheel'])
             }
         });
 
-        $scope.graph = {
-            "properties": {
-                "name": "Count lines in a file"
-            },
-            "processes": {
-                "Read File": {
-                    "component": "core/ReadFile",
-                    "metadata": {
-                        "x": 100,
-                        "y": 100
+        flowLibrary.setComponentLibrary({
+            folders: {
+                core: {
+                    folders: {},
+                    components: {
+                        count: {
+                            outports: [
+                                {
+                                    name: 'sum'
+                                }
+                            ],
+                            inports: [
+                                {
+                                    name: 'in'
+                                }
+                            ]
+                        },
+                        log: {
+                            'outports': [],
+                            'inports': [
+                                {
+                                    'name': 'in'
+                                }
+                            ]
+                        },
+                        readfile: {
+                            'outports': [
+                                {
+                                    'name': 'out'
+                                }
+                            ],
+                            'inports': [
+                                {
+                                    'name': 'source'
+                                }
+                            ]
+                        }
                     }
                 },
-                "Split by Lines": {
-                    "component": "core/SplitStr",
+                'string': {
+                    'folders': {},
+                    'components': {
+                        'split': {
+                            'outports': [
+                                {
+                                    'name': 'out'
+                                }
+                            ],
+                            'inports': [
+                                {
+                                    'name': 'separator'
+                                },
+                                {
+                                    'name': 'in'
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        });
+
+        flowLibrary.setGraphLibrary([
+            {"id": "first_graph", "name": "My First Graph", "config": {"inports": [{"name": "separator"}, {"name": "source"}]}},
+            {"id": "split_count", "name": "Split & Count", "config": {"inports": [{"name": "in"}, {"name": "separator"}], "outports": [{"name": "out"}]}}
+        ]);
+
+        $scope.graph = {
+            "properties": {
+                "name": "Split input and count"
+            },
+            "processes": {
+                "Split": {
+                    "component": "string.split",
                     "metadata": {
-                        "x": 350,
+                        "x": 250,
                         "y": 10
+                    }
+                },
+                "Count": {
+                    "component": "core.count",
+                    "metadata": {
+                        "x": 250,
+                        "y": 120
                     }
                 }
             },
             "inports": [
                 {
-                    "name": "in 1"
+                    "name": "in"
                 },
                 {
-                    "name": "in 2"
+                    "name": "separator"
                 }
             ],
             "outports": [
                 {
-                    "name": "out 1"
+                    "name": "out"
                 }
             ],
             "connections": [
                 {
-                    "data": "package.json",
-                    "tgt": {
-                        "process": "Read File",
-                        "port": "source"
-                    }
-                },
-                {
                     "src": {
-                        "process": "Read File",
+                        "process": "Split",
                         "port": "out"
                     },
                     "tgt": {
-                        "process": "Split by Lines",
+                        "process": "Count",
                         "port": "in"
                     }
                 },
                 {
                     "src": {
-                        "process":"inports",
-                        "port":"in 2"
+                        "process": "inports",
+                        "port": "in"
                     },
-                    "tgt":
-                    {
-                        "process":"Read File",
-                        "port":"dummy"
+                    "tgt": {
+                        "process": "Split",
+                        "port": "in"
+                    }
+                },
+                {
+                    "src": {
+                        "process": "inports",
+                        "port": "separator"
+                    },
+                    "tgt": {
+                        "process": "Split",
+                        "port": "separator"
+                    }
+                },
+                {
+                    "src": {
+                        "process": "Count",
+                        "port": "sum"
+                    },
+                    "tgt": {
+                        "process": "outports",
+                        "port": "out"
                     }
                 }
             ]
         };
+
+        //$scope.chart = viewmodel.ChartViewModel($scope.graph);
+        //console.log($scope.chart);
+        //console.log(JSON.stringify($scope.chart.model()));
+        //$scope.chart.processes["Read File"].inports[0].data.name = "Fish";
+        //$scope.chart.addProcess("core/ReadFile", {});
+        //$scope.chart.deleteConnection($scope.chart.connections[0]);
+
     }]);

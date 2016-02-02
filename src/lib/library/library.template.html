@@ -1,12 +1,23 @@
 <uib-accordion close-others="false">
-    <uib-accordion-group ng-repeat="(name, library) in libraries" heading="{{name}}">
+    <uib-accordion-group ng-repeat="(name, folder) in library.folders" heading="{{name}}">
         <ul>
-            <li ng-repeat="(processName, process) in library"
+            <li ng-repeat="(processName, process) in folder.components"
                 ui-draggable="true"
                 drag="processId(name, processName)"
                 drag-channel="ng-flow-process"
             >
                 {{processName}}
+            </li>
+        </ul>
+    </uib-accordion-group>
+    <uib-accordion-group heading="Graphs">
+        <ul>
+            <li ng-repeat="graph in graphLibrary"
+                ui-draggable="true"
+                drag="graph.id"
+                drag-channel="ng-flow-graph"
+                >
+                {{graph.name}}
             </li>
         </ul>
     </uib-accordion-group>

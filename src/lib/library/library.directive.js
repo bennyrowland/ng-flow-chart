@@ -5,14 +5,15 @@ angular.module('flowchart')
     .directive('ngFlowLibrary', ['flowLibrary', function(flowLibrary) {
         return {
             restrict: 'E',
-            scope: {
-                graphSpec: '='
-            },
+            /*scope: {
+                currentGraph: '='
+            },*/
             link: function (scope, element, attrs) {
-                scope.libraries = flowLibrary.getAllLibraries();
+                scope.library = flowLibrary.getAllLibraries();
+                scope.graphLibrary = angular.copy(flowLibrary.graphLibrary());
 
-                scope.processId = function(lib, process) {
-                    return lib + "/" + process;
+                scope.processId = function(folder, process) {
+                    return folder + "." + process;
                 };
             },
             templateUrl: "library/library.template.html",
