@@ -180,7 +180,6 @@ angular.module('flowchart')
                 };
 
                 scope.editConnection = function (connection) {
-                    console.log('editing data connection ' + connection);
                     $uibModal.open({
                         animation: true,
                         templateUrl: "flowchart/data.template.html",
@@ -197,7 +196,6 @@ angular.module('flowchart')
                 };
 
                 scope.deleteConnection = function (connection) {
-                    console.log(connection);
                     scope.graph.deleteConnection(connection);
                 };
 

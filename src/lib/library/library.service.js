@@ -19,7 +19,7 @@ angular.module('flowchart')
             loadedLibraries[name] = lib;
         };
 
-        libraryFunctions.getComponentSchema = function(name) {
+        /*libraryFunctions.getComponentSchema = function(name) {
             // special treatment for graph component
             if (name === 'core.graph') {
                 console.log("ERROR: should not be getting schema for graph");
@@ -48,6 +48,41 @@ angular.module('flowchart')
             else {
                 console.log("component " + name + " not found");
                 return undefined;
+            }
+        };*/
+
+        libraryFunctions.getComponentSchema = function(name) {
+            if (name === 'core.graph') {
+                console.log("ERROR");
+                return undefined;
+            }
+            var remainingName = name;
+            var currentFolder = library;
+            // TODO make this recursive to catch missing components
+            var j = 0;
+            while (j < 15) {
+                var targetName;
+                if (remainingName.indexOf('.') < 0) {
+                    targetName = remainingName;
+                }
+                else {
+                    targetName = remainingName.slice(0, remainingName.indexOf('.'));
+                    remainingName = remainingName.slice(remainingName.indexOf('.') + 1);
+                }
+                for (var i = 0; i < currentFolder.children.length; ++i) {
+                    if (currentFolder.children[i].name === targetName) {
+                        if (currentFolder.children[i].children.length === 0) {
+                            return currentFolder.children[i].config;
+                        }
+                        else {
+                            currentFolder = currentFolder.children[i];
+                            break;
+                        }
+                    }
+                }
+                j++;
+                //console.log("didn't find the right child");
+                //break;
             }
         };
 

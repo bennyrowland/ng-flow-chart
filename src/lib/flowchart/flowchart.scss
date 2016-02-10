@@ -148,3 +148,18 @@ body {
   horiz-align: right;
   padding: 10px;
 }
+
+treecontrol.tree-classic li.tree-expanded i.tree-branch-head {
+  padding: 1px 10px;
+  background: blue;
+}
+
+treecontrol.tree-classic li.tree-collapsed i.tree-branch-head {
+  padding: 1px 10px;
+  background: red;
+}
+
+treecontrol.tree-classic li.tree-leaf i.tree-leaf-head {
+  padding: 1px 10px;
+  background: green;
+}

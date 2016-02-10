@@ -1,5 +1,5 @@
 <uib-accordion close-others="false">
-    <uib-accordion-group ng-repeat="(name, folder) in library.folders" heading="{{name}}">
+    <!--<uib-accordion-group ng-repeat="(name, folder) in library.folders" heading="{{name}}">
         <ul>
             <li ng-repeat="(processName, process) in folder.components"
                 ui-draggable="true"
@@ -20,5 +20,24 @@
                 {{graph.name}}
             </li>
         </ul>
-    </uib-accordion-group>
+    </uib-accordion-group>-->
+    <treecontrol class="tree-classic"
+                 tree-model="library"
+                 options="treeOptions"
+                 on-selection="showSelected(node)"
+                 selected-node="node1"
+    >
+        <span ui-draggable="true"
+              drag="node.id"
+              drag-channel="ng-flow-process"
+              style="width: 100px"
+              ng-if="!node.children.length"
+              >
+            {{node.name}}
+        </span>
+        <span ng-if="node.children.length"
+              >
+            {{node.name}}
+        </span>
+    </treecontrol>
 </uib-accordion>

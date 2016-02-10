@@ -136,9 +136,13 @@ angular.module('flowchart')
                     return true;
                 };
 
+                console.log("creating data connection with inport ");
+                console.log(self.inport);
+
                 self.dataValue = outport;
 
                 self.model = function () {
+                    console.log(self);
                     return {
                         data: self.dataValue,
                         tgt: {
@@ -368,6 +372,8 @@ angular.module('flowchart')
 
             // finally we create the connections
             self.connections = chartData.connections.map(function (connectionModel) {
+                console.log("creating connection with model");
+                console.log(connectionModel);
                 var inport = self.getProcess(connectionModel.tgt.process).getInport(connectionModel.tgt.port);
                 var outport;
                 if ('data' in connectionModel) {

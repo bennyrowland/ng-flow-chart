@@ -17,7 +17,7 @@ angular.module('flowchartDemo', ['flowchart', 'monospaced.mousewheel'])
             }
         });
 
-        flowLibrary.setComponentLibrary({
+        /*flowLibrary.setComponentLibrary({
             folders: {
                 core: {
                     folders: {},
@@ -77,6 +77,108 @@ angular.module('flowchartDemo', ['flowchart', 'monospaced.mousewheel'])
                     }
                 }
             }
+        });*/
+
+        flowLibrary.setComponentLibrary({
+            "children": [
+                {
+                    "children": [
+                        {
+                            "children": [],
+                            "id": "pyflo.core.count",
+                            "config": {
+                                "inports": [
+                                    {
+                                        "name": "in"
+                                    }
+                                ],
+                                "outports": [
+                                    {
+                                        "name": "sum"
+                                    }
+                                ]
+                            },
+                            "name": "count"
+                        },
+                        {
+                            "children": [],
+                            "id": "pyflo.core.readfile",
+                            "config": {
+                                "inports": [
+                                    {
+                                        "name": "source"
+                                    }
+                                ],
+                                "outports": [
+                                    {
+                                        "name": "out"
+                                    }
+                                ]
+                            },
+                            "name": "readfile"
+                        },
+                        {
+                            "children": [],
+                            "id": "pyflo.core.log",
+                            "config": {
+                                "inports": [
+                                    {
+                                        "name": "in"
+                                    }
+                                ],
+                                "outports": []
+                            },
+                            "name": "log"
+                        }
+                    ],
+                    "name": "core"
+                },
+                {
+                    "children": [
+                        {
+                            "children": [],
+                            "id": "pyflo.string.split",
+                            "config": {
+                                "inports": [
+                                    {
+                                        "name": "in"
+                                    },
+                                    {
+                                        "name": "separator"
+                                    }
+                                ],
+                                "outports": [
+                                    {
+                                        "name": "out"
+                                    }
+                                ]
+                            },
+                            "name": "split"
+                        },
+                        {
+                            "children": [],
+                            "id": "pyflo.string.format",
+                            "config": {
+                                "inports": [
+                                    {
+                                        "name": "format"
+                                    },
+                                    {
+                                        "name": "in"
+                                    }
+                                ],
+                                "outports": [
+                                    {
+                                        "name": "out"
+                                    }
+                                ]
+                            },
+                            "name": "format"
+                        }
+                    ],
+                    "name": "string"
+                }
+            ]
         });
 
         flowLibrary.setGraphLibrary([
